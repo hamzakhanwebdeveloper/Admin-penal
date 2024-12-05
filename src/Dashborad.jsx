@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDollarSign, faUsers, faChartLine, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faDollarSign, faUsers, faChartLine, faEye, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { Line, Bar } from "react-chartjs-2"; 
 import {
   Chart as ChartJS,
@@ -13,6 +13,7 @@ import {
   Legend,
   CategoryScale,
 } from "chart.js";
+import Footer from './Footer';
 
 // Register Chart.js modules
 ChartJS.register(
@@ -26,11 +27,14 @@ ChartJS.register(
   CategoryScale
 );
 
-function Dashborad() {
+function Dashboard() {
+  const [searchTerm, setSearchTerm] = useState('');
+
   const tableData = [
     { name: "Product A", productId: "12345", price: "$100", quantity: 20, revenue: "$2000", status: "In Stock" },
     { name: "Product B", productId: "12346", price: "$50", quantity: 10, revenue: "$500", status: "Low Stock" },
     { name: "Product C", productId: "12347", price: "$25", quantity: 0, revenue: "$0", status: "Out of Stock" },
+    // Add more data as needed
   ];
 
   const getStatusColor = (status) => {
@@ -45,6 +49,10 @@ function Dashborad() {
         return "text-gray-600";
     }
   };
+
+  const filteredData = tableData.filter((row) =>
+    row.productId.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const growthData = {
     labels: ["January", "February", "March", "April", "May", "June", "July"],
@@ -176,7 +184,25 @@ function Dashborad() {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto mb-6">
+      <div className="overflow-x-auto mb-6 border">
+        {/* Table Title and Search Bar */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold text-gray-700">Product Overview</h2>
+          <div className="relative mt-2 md:mt-0 ">
+            <FontAwesomeIcon
+              icon={faSearch}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            />
+            <input
+              type="text"
+              placeholder="Search by Product ID..."
+              className="pl-10 pr-4 py-2  border rounded-lg "
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+
         <table className="min-w-full table-auto border border-gray-300 bg-white">
           <thead>
             <tr className="bg-gray-200">
@@ -189,42 +215,62 @@ function Dashborad() {
             </tr>
           </thead>
           <tbody>
-            {tableData.map((row, index) => (
-              <tr key={index} className="border-t border-gray-300 hover:bg-gray-100">
-                <td className="py-3 px-4 text-sm text-gray-800">{row.name}</td>
-                <td className="py-3 px-4 text-sm text-gray-800">{row.productId}</td>
-                <td className="py-3 px-4 text-sm text-gray-800">{row.price}</td>
-                <td className="py-3 px-4 text-sm text-gray-800">{row.quantity}</td>
-                <td className="py-3 px-4 text-sm text-gray-800">{row.revenue}</td>
-                <td className={`py-3 px-4 text-sm font-semibold ${getStatusColor(row.status)}`}>
-                  {row.status}
+            {filteredData.length > 0 ? (
+              filteredData.map((row, index) => (
+                <tr
+                  key={index}
+                  className="border-t border-gray-300 hover:bg-gray-100"
+                >
+                  <td className="py-3 px-4 text-sm text-gray-800">{row.name}</td>
+                  <td className="py-3 px-4 text-sm text-gray-800">{row.productId}</td>
+                  <td className="py-3 px-4 text-sm text-gray-800">{row.price}</td>
+                  <td className="py-3 px-4 text-sm text-gray-800">{row.quantity}</td>
+                  <td className="py-3 px-4 text-sm text-gray-800">{row.revenue}</td>
+                  <td
+                    className={`py-3 px-4 text-sm font-semibold ${getStatusColor(
+                      row.status
+                    )}`}
+                  >
+                    {row.status}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="6"
+                  className="py-4 px-4 text-center text-gray-500"
+                >
+                  No matching records found.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Growth Rate Chart (Line Chart) */}
-        <div className="bg-white shadow-lg rounded-lg p-4">
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4">Growth Rate</h2>
-          <div className="h-64">
+        <div className="bg-white p-4 shadow-lg rounded-lg">
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">Growth Rate</h2>
+          <div className="relative h-72">
             <Line data={growthData} options={growthOptions} />
           </div>
         </div>
 
-        {/* Earnings Chart (Bar Chart) */}
-        <div className="bg-white shadow-lg rounded-lg p-4">
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4">Earnings</h2>
-          <div className="h-64">
+        <div className="bg-white p-4 shadow-lg rounded-lg">
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">Earnings</h2>
+          <div className="relative h-72">
             <Bar data={earningsData} options={earningsOptions} />
           </div>
         </div>
       </div>
+      <br />
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
 
-export default Dashborad;
+export default Dashboard;

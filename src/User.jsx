@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Footer from './Footer';
 
 function User() {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ function User() {
     address: '',
     city: '',
     district: '',
+    profileImage: null, // New state to store the profile image
   });
 
   const handleChange = (e) => {
@@ -18,6 +20,16 @@ function User() {
       ...formData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({
+        ...formData,
+        profileImage: URL.createObjectURL(file), // Store the image URL
+      });
+    }
   };
 
   const handleSubmit = (e) => {
@@ -136,6 +148,32 @@ function User() {
           </div>
         </div>
 
+        {/* Image Upload Field (Third row after district) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div>
+            <label htmlFor="profileImage" className="font-semibold text-gray-700">
+              Profile Image
+            </label>
+            <input
+              id="profileImage"
+              name="profileImage"
+              type="file"
+              onChange={handleFileChange}
+              accept="image/*"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {formData.profileImage && (
+              <div className="mt-4">
+                <img
+                  src={formData.profileImage}
+                  alt="Profile Preview"
+                  className="w-24 h-24 object-cover rounded-full"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Address (moved to the last) */}
         <div>
           <textarea
@@ -159,6 +197,8 @@ function User() {
           </button>
         </div>
       </form>
+      <br />
+      <Footer/>
     </div>
   );
 }
