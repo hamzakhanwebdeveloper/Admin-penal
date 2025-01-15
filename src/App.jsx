@@ -1,12 +1,12 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Layout from './Layout'; // Import the Layout component
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Layout from "./Layout"; // Import the Layout component
 
 // Sample pages for routing
-import Dashboard from './Dashborad';
-import User from './User';
-import Report from './Report';
-import Settings from './Setting';
+import Dashboard from "./Dashborad";
+import User from "./User";
+import Report from "./Report";
+import Settings from "./Setting";
 
 function App() {
   return (
